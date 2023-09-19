@@ -34,17 +34,17 @@ PROJECT_FULL_NAME = jdeokkim/pow6
 
 PROJECT_PREFIX = ${_COLOR_BEGIN}${PROJECT_FULL_NAME}:${_COLOR_END}
 
-BINARY_PATH = bin
 INCLUDE_PATH = include
+LIBRARY_PATH = bin
 SOURCE_PATH = src
 
 OBJECTS = \
-	${SOURCE_PATH}/main.o   \
 	${SOURCE_PATH}/sauce.o
 
-TARGETS = ${BINARY_PATH}/${PROJECT_NAME}.out
+TARGETS = ${LIBRARY_PATH}/lib${PROJECT_NAME}.a
 
 CC = gcc
+AR = ar
 CFLAGS = -D_DEFAULT_SOURCE -g -I${INCLUDE_PATH} -O2 -std=c99
 
 # CFLAGS += -fsanitize=address -Wall -Werror -Wpedantic
@@ -52,7 +52,7 @@ CFLAGS = -D_DEFAULT_SOURCE -g -I${INCLUDE_PATH} -O2 -std=c99
 all: pre-build build post-build
 
 pre-build:
-	@printf "${PROJECT_PREFIX} Using: '${CC}' to build this project.\n"
+	@printf "${PROJECT_PREFIX} Using: '${CC}' and '${AR}' to build this library.\n"
 
 build: ${TARGETS}
 
@@ -61,14 +61,14 @@ build: ${TARGETS}
 	@${CC} -c $< -o $@ ${CFLAGS}
 
 ${TARGETS}: ${OBJECTS}
-	@mkdir -p ${BINARY_PATH}
+	@mkdir -p ${LIBRARY_PATH}
 	@printf "${PROJECT_PREFIX} Linking: ${TARGETS}\n"
-	@${CC} ${OBJECTS} -o ${TARGETS} ${LDFLAGS} ${LDLIBS}
+	@${AR} rcs ${TARGETS} ${OBJECTS}
 
 post-build:
 	@printf "${PROJECT_PREFIX} Build complete.\n"
 
 clean:
 	@printf "${PROJECT_PREFIX} Cleaning up.\n"
-	@rm -f ${BINARY_PATH}/*.out
+	@rm -f ${LIBRARY_PATH}/*.a
 	@rm -f ${SOURCE_PATH}/*.o
