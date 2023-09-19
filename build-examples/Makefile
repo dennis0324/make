@@ -24,7 +24,7 @@
 
 .PHONY: all clean
 .PRAGMA: posix_202x
-.SUFFIXES: .a .c .o
+.SUFFIXES: .c .o .out
 
 _COLOR_BEGIN = \033[1;30m
 _COLOR_END = \033[m
@@ -34,41 +34,35 @@ PROJECT_FULL_NAME = jdeokkim/pow6
 
 PROJECT_PREFIX = ${_COLOR_BEGIN}${PROJECT_FULL_NAME}:${_COLOR_END}
 
+BINARY_PATH = bin
 INCLUDE_PATH = include
-LIBRARY_PATH = bin
 SOURCE_PATH = src
 
-OBJECTS = \
-	${SOURCE_PATH}/sauce.o
-
-TARGETS = ${LIBRARY_PATH}/lib${PROJECT_NAME}.a
+TARGETS = \
+	${SOURCE_PATH}/carlo.out  \
+	${SOURCE_PATH}/monte.out
 
 CC = gcc
-AR = ar
 CFLAGS = -D_DEFAULT_SOURCE -g -I${INCLUDE_PATH} -O2 -std=c99
+LDLIBS = -lm
 
 # CFLAGS += -fsanitize=address -Wall -Werror -Wpedantic
 
 all: pre-build build post-build
 
 pre-build:
-	@printf "${PROJECT_PREFIX} Using: '${CC}' and '${AR}' to build this library.\n"
+	@printf "${PROJECT_PREFIX} Using: '${CC}' to build this project.\n"
 
 build: ${TARGETS}
 
-.c.o:
+.c.out:
 	@printf "${PROJECT_PREFIX} Compiling: $@ (from $<)\n"
-	@${CC} -c $< -o $@ ${CFLAGS}
-
-${TARGETS}: ${OBJECTS}
-	@mkdir -p ${LIBRARY_PATH}
-	@printf "${PROJECT_PREFIX} Linking: ${TARGETS}\n"
-	@${AR} rcs ${TARGETS} ${OBJECTS}
+	@${CC} $< -o $@ ${CFLAGS} ${LDFLAGS} ${LDLIBS}
 
 post-build:
 	@printf "${PROJECT_PREFIX} Build complete.\n"
 
 clean:
 	@printf "${PROJECT_PREFIX} Cleaning up.\n"
-	@rm -f ${LIBRARY_PATH}/*.a
+	@rm -f ${SOURCE_PATH}/*.out
 	@rm -f ${SOURCE_PATH}/*.o
