@@ -1,0 +1,67 @@
+#!/bin/bash
+readonly argv_0=$(basename $0)
+readonly argc=$#
+
+clean=false
+multiple=false
+
+while getopts "lcmhen:" opt; do
+	case "$opt" in
+	h) ;;
+	l)
+		# library(static)
+		if [[ -f "Makefile" ]]; then
+			rm Makefile
+		fi
+
+		curl -s https://raw.githubusercontent.com/dennis0324/make/main/build-static-library/Makefile --output "Makefile"
+		;;
+
+	m)
+		# multiple
+		if [[ -f "Makefile" ]]; then
+			rm Makefile
+		fi
+		curl -s https://raw.githubusercontent.com/dennis0324/make/main/build-examples/Makefile --output "Makefile"
+		;;
+
+	e)
+		# executable
+		if [[ -f "Makefile" ]]; then
+			rm Makefile
+		fi
+		curl -s https://raw.githubusercontent.com/dennis0324/make/main/build-executable/Makefile --output "Makefile"
+		;;
+	n)
+		# name
+		opt_host=$OPTARG
+
+		;;
+	c)
+		# clean
+		clean=true
+		;;
+	*)
+		printf "%s: option '-%s' " $argv_0 $OPTARG
+		printf "is invalid\n"
+
+		;;
+	esac
+done
+
+if [ $argc = 0 ]; then
+	# help
+
+	echo "usage"
+	# printf "%s: option '-%s' " $argv_0 $OPTARG
+	# printf "is invalid\n"
+	exit 0
+fi
+
+echo "runing makefile"
+make -f Makefile
+
+if [[ $clean = true ]]; then
+	echo "remove makefile"
+	rm Makefile
+fi
