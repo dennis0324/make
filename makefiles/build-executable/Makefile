@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2021-2023 Jaedeok Kim <jdeokkim@protonmail.com>
+# Copyright (c) 2023 Jaedeok Kim <jdeokkim@protonmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -42,28 +42,53 @@
 # SOFTWARE.
 #
 
-# 백업 파일
-*.bak
+.POSIX:
 
-# 설정 파일
-*.manifest
-**/.vs/
-**/.vscode/
+.PHONY: all clean
+.PRAGMA: posix_202x
+.SUFFIXES: .c .o .out
 
-# 오브젝트 파일
-*.o
+_COLOR_BEGIN = \033[1;30m
+_COLOR_END = \033[m
 
-# 정적 라이브러리 파일
-*.a
-*.lib
+PROJECT_FULL_NAME = ${PROJECT_AUTHOR}/${PROJECT_NAME}
 
-# 빌드 결과물
-*.data
-*.exe
-*.js
-*.html
-*.out
-*.wasm
+PROJECT_PREFIX = ${_COLOR_BEGIN}${PROJECT_FULL_NAME}:${_COLOR_END}
 
-# test 폴더
-**/test/
+BINARY_PATH = bin
+INCLUDE_PATH = include
+SOURCE_PATH = src
+
+SOURCES = $(shell find $(SOURCE_PATH) -name '*.c')
+OBJECTS = $(SOURCES:.c=.o)
+
+TARGETS = ${BINARY_PATH}/${PROJECT_NAME}.out
+
+CC = gcc
+CFLAGS = -D_DEFAULT_SOURCE -g -I${INCLUDE_PATH} -O2 -std=c99
+
+# CFLAGS += -fsanitize=address -Wall -Werror -Wpedantic
+
+all: pre-build build post-build
+
+pre-build:
+	@printf "${PROJECT_PREFIX} Using: '${CC}' to build this project.\n"
+
+build: ${TARGETS}
+
+.c.o:
+	@printf "${PROJECT_PREFIX} Compiling: $@ (from $<)\n"
+	@${CC} -c $< -o $@ ${CFLAGS}
+
+${TARGETS}: ${OBJECTS}
+	@mkdir -p ${BINARY_PATH}
+	@printf "${PROJECT_PREFIX} Linking: ${TARGETS}\n"
+	@${CC} ${OBJECTS} -o ${TARGETS} ${LDFLAGS} ${LDLIBS}
+
+post-build:
+	@printf "${PROJECT_PREFIX} Build complete.\n"
+
+clean:
+	@printf "${PROJECT_PREFIX} Cleaning up.\n"
+	@rm -f ${BINARY_PATH}/*.out
+	@rm -f ${SOURCE_PATH}/*.o

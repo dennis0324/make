@@ -1,45 +1,54 @@
 #!/bin/bash
+usage="$(basename "$0") [-h] [-s n] -- program to calculate the answer to life, the universe and everything
+
+where:
+    -l  show this help text
+    -i  initialize folder structure
+    -r  redownload makefile
+    -m  create output for each c files
+    -e  create one executable in src folder
+    -l  create static library
+    -c  remove makefile after run"
 readonly argv_0=$(basename $0)
 readonly argc=$#
 
-clean=false
-multiple=false
+name=newProject
+author="JohnDoe"
 
-while getopts "lcmhen:" opt; do
+if [[ -f ".makeOnlineConfig" ]]; then
+	. .makeOnlineConfig
+fi
+
+while getopts "licmhen:" opt; do
 	case "$opt" in
 	h) ;;
 	l)
 		# library(static)
-		if [[ -f "Makefile" ]]; then
-			rm Makefile
-		fi
-
-		curl -s https://raw.githubusercontent.com/dennis0324/make/main/build-static-library/Makefile --output "Makefile"
+		URI="https://raw.githubusercontent.com/dennis0324/make/main/build-static-library/Makefile"
 		;;
 
 	m)
 		# multiple
-		if [[ -f "Makefile" ]]; then
-			rm Makefile
-		fi
-		curl -s https://raw.githubusercontent.com/dennis0324/make/main/build-examples/Makefile --output "Makefile"
+		URI="https://raw.githubusercontent.com/dennis0324/make/main/build-examples/Makefile"
 		;;
 
 	e)
 		# executable
-		if [[ -f "Makefile" ]]; then
-			rm Makefile
-		fi
-		curl -s https://raw.githubusercontent.com/dennis0324/make/main/build-executable/Makefile --output "Makefile"
+		URI="https://raw.githubusercontent.com/dennis0324/make/main/build-executable/Makefile"
+		;;
+	i)
+		initialize=true
 		;;
 	n)
 		# name
-		opt_host=$OPTARG
-
+		name=$OPTARG
 		;;
 	c)
 		# clean
 		clean=true
+		;;
+	r)
+		redownload=true
 		;;
 	*)
 		printf "%s: option '-%s' " $argv_0 $OPTARG
@@ -49,19 +58,40 @@ while getopts "lcmhen:" opt; do
 	esac
 done
 
+[[ ! -z $PROJECT_NAME ]] && name=$PROJECT_NAME
+[[ ! -z $PROJECT_AUTHOR ]] && author=$PROJECT_AUTHOR
+
 if [ $argc = 0 ]; then
 	# help
-
-	echo "usage"
-	# printf "%s: option '-%s' " $argv_0 $OPTARG
-	# printf "is invalid\n"
+	echo "$usage"
 	exit 0
 fi
 
-echo "runing makefile"
-make -f Makefile
+if [[ $initialize = true ]]; then
+	echo "making folder structure"
+	[[ -d src ]] && mkdir src
+	[[ -d include ]] && mkdir include
+	[[ -d bin ]] && mkdir bin
+fi
+
+if [[ $redownload = true ]]; then
+	echo "redownloading makefile"
+	if [[ -f "Makefile" ]]; then
+		rm Makefile
+	fi
+fi
+
+if [[ ! -f "Makefile" ]]; then
+	echo $URI
+	curl -s "$URI" --output "Makefile"
+fi
+
+if [ -f "Makefile" ]; then
+	echo "runing makefile"
+	make -f Makefile PROJECT_NAME="$name" PROJECT_AUTHOR="$author"
+fi
 
 if [[ $clean = true ]]; then
-	echo "remove makefile"
+	echo "removing makefile"
 	rm Makefile
 fi
