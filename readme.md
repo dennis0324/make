@@ -32,6 +32,7 @@ wget -O - raw.githubusercontent.com/dennis0324/make/main/makeOnline.sh  | bash -
 # Features
 
 fill free to tell me more feature that you want to add.
+
 TODO:
 
-- [] feature ignore file or folders
+- [ ] feature ignore file or folders
