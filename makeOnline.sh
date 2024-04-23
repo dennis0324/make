@@ -19,22 +19,25 @@ if [[ -f ".makeOnlineConfig" ]]; then
 	. .makeOnlineConfig
 fi
 
-while getopts "licmhen:" opt; do
+while getopts "rlicmhen:" opt; do
 	case "$opt" in
 	h) ;;
 	l)
 		# library(static)
-		URI="https://raw.githubusercontent.com/dennis0324/make/main/build-static-library/Makefile"
+		URI="https://raw.githubusercontent.com/dennis0324/make/main/makefiles/build-static-library/Makefile"
+		doCurl=true
 		;;
 
 	m)
 		# multiple
-		URI="https://raw.githubusercontent.com/dennis0324/make/main/build-examples/Makefile"
+		URI="https://raw.githubusercontent.com/dennis0324/make/main/makefiles/build-exmaples/Makefile"
+		doCurl=true
 		;;
 
 	e)
 		# executable
-		URI="https://raw.githubusercontent.com/dennis0324/make/main/build-executable/Makefile"
+		URI="https://raw.githubusercontent.com/dennis0324/make/main/makefiles/build-executable/Makefile"
+		doCurl=true
 		;;
 	i)
 		initialize=true
@@ -69,9 +72,9 @@ fi
 
 if [[ $initialize = true ]]; then
 	echo "making folder structure"
-	[[ -d src ]] && mkdir src
-	[[ -d include ]] && mkdir include
-	[[ -d bin ]] && mkdir bin
+	[[ ! -d src ]] && mkdir src
+	[[ ! -d include ]] && mkdir include
+	[[ ! -d bin ]] && mkdir bin
 fi
 
 if [[ $redownload = true ]]; then
@@ -81,9 +84,9 @@ if [[ $redownload = true ]]; then
 	fi
 fi
 
-if [[ ! -f "Makefile" ]]; then
+if [[ ! -f "Makefile" ]] && [[ $doCurl = true ]]; then
 	echo $URI
-	curl -s "$URI" --output "Makefile"
+	curl -sS "$URI" --output "Makefile"
 fi
 
 if [ -f "Makefile" ]; then
