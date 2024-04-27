@@ -50,6 +50,9 @@ while getopts "rlicmhen:N:" opt; do
 		# name
 		name=$OPTARG
 		sed -i "s/PROJECT_NAME=.*/PROJECT_NAME=$name/g" .makeOnlineConfig
+		if [[ -f Makefile ]]; then
+			sed -i "s/PROJECT_NAME = .*/PROJECT_NAME = $name/g" Makefile
+		fi
 		echo changed name $PROJECT_NAME to $name
 		rename=true
 		;;
@@ -57,6 +60,9 @@ while getopts "rlicmhen:N:" opt; do
 		# author
 		author=$OPTARG
 		sed -i "s/PROJECT_AUTHOR=.*/PROJECT_AUTHOR=$author/g" .makeOnlineConfig
+		if [[ -f Makefile ]]; then
+			sed -i "s/PROJECT_AUTHOR = .*/PROJECT_AUTHOR = $author/g" Makefile
+		fi
 		echo changed name $PROJECT_AUTHOR to $author
 		rename=true
 		;;
