@@ -5,27 +5,35 @@ this repository is oneline Makefile that can be used to build C/C++ projects.
 ## Usage
 
 ```
-  -l  show this help text
-  -i  initialize folder structure
-  -r  redownload makefile
-  -m  create output for each c files
-  -e  create one executable in src folder
-  -l  create static library
-  -c  remove makefile after run"
+-l  show this help text
+-i  [i]nitialize folder structure
+-r  [r]edownload makefile
+-m  create output for each c files
+-e  create one [e]xecutable in src folder
+-l  create static [l]ibrary
+-c  [c]lear makefile after run
+-a  make command [a]lias
+-n  change [n]ame of the project
+-N  change [N]ame of the Author
 ```
 
+## Examples
+
+1. download the makefile that create one executeable
+
 ```bash
-# download the makefile that create one executeable
 wget -O - raw.githubusercontent.com/dennis0324/make/main/makeOnline.sh  | bash -s -- -e
 ```
 
+2. download the makefile that create executeable for each source file
+
 ```bash
-# download the makefile that create executeable for each source file
 wget -O - raw.githubusercontent.com/dennis0324/make/main/makeOnline.sh  | bash -s -- -m
 ```
 
+3. download the makefile that create library
+
 ```bash
-# download the makefile that create library
 wget -O - raw.githubusercontent.com/dennis0324/make/main/makeOnline.sh  | bash -s -- -l
 ```
 
