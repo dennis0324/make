@@ -1,14 +1,18 @@
 #!/bin/bash
-usage="$(basename "$0") [-h] [-s n] -- program to calculate the answer to life, the universe and everything
+usage="$(basename "$0")
 
 where:
     -l  show this help text
-    -i  initialize folder structure
-    -r  redownload makefile
+    -i  [i]nitialize folder structure
+    -r  [r]edownload makefile
     -m  create output for each c files
-    -e  create one executable in src folder
-    -l  create static library
-    -c  remove makefile after run"
+    -e  create one [e]xecutable in src folder
+    -l  create static [l]ibrary
+    -c  [c]lear makefile after run
+    -a  make command [a]lias
+    -n  change [n]ame of the project
+    -N  change [N]ame of the Author
+    "
 readonly argv_0=$(basename $0)
 readonly argc=$#
 
@@ -19,7 +23,7 @@ if [[ -f ".makeOnlineConfig" ]]; then
 	. .makeOnlineConfig
 fi
 
-while getopts "rlicmhen:" opt; do
+while getopts "rlicmhen:N:" opt; do
 	case "$opt" in
 	h) ;;
 	l)
@@ -45,6 +49,16 @@ while getopts "rlicmhen:" opt; do
 	n)
 		# name
 		name=$OPTARG
+		sed -i "s/PROJECT_NAME=.*/PROJECT_NAME=$name/g" .makeOnlineConfig
+		echo changed name $PROJECT_NAME to $name
+		rename=true
+		;;
+	N)
+		# author
+		author=$OPTARG
+		sed -i "s/PROJECT_AUTHOR=.*/PROJECT_AUTHOR=$author/g" .makeOnlineConfig
+		echo changed name $PROJECT_AUTHOR to $author
+		rename=true
 		;;
 	c)
 		# clean
@@ -87,9 +101,16 @@ fi
 if [[ ! -f "Makefile" ]] && [[ $doCurl = true ]]; then
 	echo $URI
 	curl -sS "$URI" --output "Makefile"
+	sed -i "s/PROJECT_NAME = .*/PROJECT_NAME = $name/g" Makefile
+	sed -i "s/PROJECT_AUTHOR = .*/PROJECT_AUTHOR = $author/g" Makefile
+	if [ ! -f ".makeOnlineConfig" ]; then
+		curl -sS "https://raw.githubusercontent.com/dennis0324/make/main/config/.makeOnlineConfig" --output ".makeOnlineConfig"
+		sed -i "s/PROJECT_NAME=.*/PROJECT_NAME=$name/g" .makeOnlineConfig
+		sed -i "s/PROJECT_AUTHOR=.*/PROJECT_AUTHOR=$author/g" .makeOnlineConfig
+	fi
 fi
 
-if [ -f "Makefile" ]; then
+if [[ -f "Makefile" ]] && [[ ! $rename ]]; then
 	echo "runing makefile"
 	make -f Makefile PROJECT_NAME="$name" PROJECT_AUTHOR="$author"
 fi
