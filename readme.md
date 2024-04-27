@@ -1,6 +1,6 @@
-# oneline Makefile
+# online Makefile
 
-this repository is oneline Makefile that can be used to build C/C++ projects.
+this repository is online Makefile that can be used to build C/C++ projects.
 
 ## Usage
 
